@@ -7,13 +7,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.kej.perfume_store.service.collect.ShinsegaeService;
 
 @SpringBootTest
-public class CollectTest {
+public class SsgTest {
 	
-	@Autowired ShinsegaeService collectService;
+	@Autowired ShinsegaeService ssgService;
 	
 	@Test
 	public void collect1() {
-		collectService.collectStore();
+		ssgService.collectStore();
+	}
+	
+	@Test
+	public void test2() {
+		ssgService.mappingStoreToBrand();
 	}
 
 }

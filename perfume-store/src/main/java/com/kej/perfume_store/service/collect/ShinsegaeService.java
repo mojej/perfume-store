@@ -21,12 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kej.perfume_store.model.MallData;
 import com.kej.perfume_store.model.PerfumeStore;
 import com.kej.perfume_store.repository.MallDataRepository;
 import com.kej.perfume_store.repository.PerfumeStoreRepository;
+import com.kej.perfume_store.service.BrandService;
 
 @Service
 public class ShinsegaeService {
@@ -35,38 +37,44 @@ public class ShinsegaeService {
 
 	@Autowired
 	@Qualifier("jdbcMallDataRepository") // Test JdbcTemplate
-	private MallDataRepository mallDataRepository;
+	private MallDataRepository mallRepository;
 	@Autowired
 	@Qualifier("jdbcPerfumeStoreRepository") // Test JdbcTemplate
-	private PerfumeStoreRepository perfumeStoreRepository;
+	private PerfumeStoreRepository storeRepository;
 	
+	@Autowired BrandService brandService; 
 	
 	public void collectStore() {
-		List<MallData> mallList = mallDataRepository.findAll();
+		List<MallData> mallList = mallRepository.findAll();
 		for(MallData mall : mallList) {
 			log.info("start collect: {}", mall.getMallName());
 			Map<String, Object> stores = getStoresByMall(mall.getMallUrl());
 			for(Object key : stores.keySet()) {
 				// uk(store_key)로 존재 유무 확인
 				// 존재하지 않는다면, insert
-				PerfumeStore store = perfumeStoreRepository.findByUk(key.toString());
+				PerfumeStore store = storeRepository.findByUk(key.toString());
 				if(store == null) {
 					store = new PerfumeStore();
 					store.setStoreKey(key.toString());
-					store.setRawData(stores.get(key).toString());
+					try {
+						String rawdata = objectMapper.writeValueAsString(stores.get(key));
+						store.setRawData(rawdata);
+					} catch (JsonProcessingException e) {
+						e.printStackTrace();
+					}
 					store.setMallId(mall.getMallId());
-					perfumeStoreRepository.save(store);
+					storeRepository.save(store);
 					log.info("store inserted: {}", key);
 				} 
 				// 존재한다면, update
 				else {
 					store.setRawData(stores.get(key).toString());
-					perfumeStoreRepository.update(store);
+					storeRepository.update(store);
 					log.info("store updated: {}", key);
 				}
 			}
 			mall.setUpdatedTime(LocalDateTime.now());
-			mallDataRepository.update(mall);
+			mallRepository.update(mall);
 			log.info("finish collect: {}", mall.getMallName());
 		}
 	}
@@ -126,5 +134,23 @@ public class ShinsegaeService {
         return perfumes;
 	}
 
+	public void mappingStoreToBrand() {
+		Map<String, Integer> brands = brandService.getBrandMappingMap();
+		
+		List<PerfumeStore> stores = storeRepository.findAll();
+		for(PerfumeStore store:stores) {
+			String json = store.getRawData();
+			try {
+				Map<String, Object> map = objectMapper.readValue(json, new TypeReference<Map<String,Object>>() {});
+				String name = map.get("shop_nm").toString();
+				if(brands.get(name) != null) {
+					System.out.println(name +":"+ brands.get(name));
+				}
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 }
