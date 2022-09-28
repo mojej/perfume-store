@@ -2,7 +2,10 @@ package com.kej.perfume_store.repository;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +15,7 @@ import com.kej.perfume_store.model.PerfumeStore;
 
 @Repository
 public class JdbcPerfumeStoreRepository implements PerfumeStoreRepository {
+	private Logger log = LoggerFactory.getLogger(JdbcPerfumeStoreRepository.class);
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -26,7 +30,7 @@ public class JdbcPerfumeStoreRepository implements PerfumeStoreRepository {
 	public int update(PerfumeStore store) {
 		String sql = "update perfume.perfume_store set brand_name=?, phone_number=?, raw_data=?, mall_id=?, store_key=? where store_id=?";
 		return jdbcTemplate.update(sql, store.getBrandName(), store.getPhoneNumber(), store.getRawData(),
-				store.getMallId(), store.getStoreKey(), store.getMallId());
+				store.getMallId(), store.getStoreKey(), store.getStoreId());
 	}
 
 	@Override
@@ -52,6 +56,16 @@ public class JdbcPerfumeStoreRepository implements PerfumeStoreRepository {
 		String sql = "select * from perfume.perfume_store where store_key=?";
 		try {	
 			return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<PerfumeStore>(PerfumeStore.class), storeKey);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public PerfumeStore findById(Integer storeId) {
+		String sql = "select * from perfume.perfume_store where store_id=?";
+		try {	
+			return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<PerfumeStore>(PerfumeStore.class), storeId);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}

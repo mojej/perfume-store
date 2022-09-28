@@ -1,4 +1,4 @@
-package com.kej.perfume_store.service;
+package com.kej.perfume_store.service.collect;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -29,8 +29,8 @@ import com.kej.perfume_store.repository.MallDataRepository;
 import com.kej.perfume_store.repository.PerfumeStoreRepository;
 
 @Service
-public class CollectService {
-	private Logger log = LoggerFactory.getLogger(CollectService.class);
+public class ShinsegaeService {
+	private Logger log = LoggerFactory.getLogger(ShinsegaeService.class);
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@Autowired
@@ -39,6 +39,7 @@ public class CollectService {
 	@Autowired
 	@Qualifier("jdbcPerfumeStoreRepository") // Test JdbcTemplate
 	private PerfumeStoreRepository perfumeStoreRepository;
+	
 	
 	public void collectStore() {
 		List<MallData> mallList = mallDataRepository.findAll();

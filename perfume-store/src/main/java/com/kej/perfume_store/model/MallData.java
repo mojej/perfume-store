@@ -10,6 +10,8 @@ public class MallData {
 	private String mallUrl;
 	private LocalDateTime updatedTime;
 	
+	public MallData() {}
+	
 	public MallData(Integer mallId, String mallKey, String mallName, String mallType, String mallUrl,
 			LocalDateTime updatedTime) {
 		super();

@@ -1,16 +1,17 @@
 package com.kej.perfume_store.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PerfumeBrand {
 	private Integer brandId;
 	private String processedName;
-	private List<Object> collectedName;
-	private List<Object> storeId;
+	private List<String> collectedName = new ArrayList<>();
+	private List<Integer> storeId = new ArrayList<>();
 	
 	public PerfumeBrand() {}
 
-	public PerfumeBrand(Integer brandId, String processedName, List<Object> collectedName, List<Object> storeId) {
+	public PerfumeBrand(Integer brandId, String processedName, List<String> collectedName, List<Integer> storeId) {
 		super();
 		this.brandId = brandId;
 		this.processedName = processedName;
@@ -34,19 +35,19 @@ public class PerfumeBrand {
 		this.processedName = processedName;
 	}
 
-	public List<Object> getCollectedName() {
+	public List<String> getCollectedName() {
 		return collectedName;
 	}
 
-	public void setCollectedName(List<Object> collectedName) {
+	public void setCollectedName(List<String> collectedName) {
 		this.collectedName = collectedName;
 	}
 
-	public List<Object> getStoreId() {
+	public List<Integer> getStoreId() {
 		return storeId;
 	}
 
-	public void setStoreId(List<Object> storeId) {
+	public void setStoreId(List<Integer> storeId) {
 		this.storeId = storeId;
 	}
 

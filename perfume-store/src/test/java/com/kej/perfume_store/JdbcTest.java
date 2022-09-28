@@ -1,5 +1,7 @@
 package com.kej.perfume_store;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -18,28 +20,85 @@ import com.kej.perfume_store.repository.PerfumeStoreRepository;
 public class JdbcTest {
 
 	@Autowired
-	@Qualifier("jdbcMallDataRepository") // Test JdbcTemplate
+	@Qualifier("jdbcMallDataRepository")
 	private MallDataRepository mallDataRepository;
 	@Autowired
-	@Qualifier("jdbcPerfumeStoreRepository") // Test JdbcTemplate
+	@Qualifier("jdbcPerfumeStoreRepository")
 	private PerfumeStoreRepository perfumeStoreRepository;
 	@Autowired
-	@Qualifier("jdbcPerfumeBrandRepository") // Test JdbcTemplate
+	@Qualifier("jdbcPerfumeBrandRepository")
 	private PerfumeBrandRepository perfumeBrandRepository;
 
+	
+	/**
+	 * mall_data
+	 */
+	
 	@Test
-	public void springJdbcTest() {
-		System.out.println("!!!!!!!!!!!!!!!!!!!!");
+	public void getMallDataAndUpdate() {
+		Integer mallId = 1;
+		MallData mallData = mallDataRepository.findById(mallId);
+		mallData.setUpdatedTime(LocalDateTime.now());
+		int update = mallDataRepository.update(mallData);
+		System.out.println(mallData.getMallName()+" updated: "+update );
+	}
+	
+	
+	@Test
+	public void mallDataFindAll() {
 		List<MallData> list = mallDataRepository.findAll();
 		for (MallData data : list) {
 			System.out.println(data.getMallId() + ": " + data.getMallName());
 		}
 	}
 	
+	
+	
+	/**
+	 * perfume_store
+	 * 
+	 */
 	@Test
 	public void findByUk() {
-		PerfumeStore ps = perfumeStoreRepository.findByUk("1234");
+		PerfumeStore ps = perfumeStoreRepository.findByUk("9090000104");
 		System.out.println(ps != null ? ps.getStoreId() : "null!");
+	}
+	
+	@Test
+	public void findByName() {
+		String storeName = "";
+		List<PerfumeStore> stores = perfumeStoreRepository.findByName(storeName);
+		System.out.println("stores length: "+stores.size());
+		for(PerfumeStore store:stores) {
+			System.out.println(store.getStoreId() +": "+ store.getBrandName());
+		}
+	}
+	
+	@Test
+	public void saveStore() {
+		PerfumeStore store = new PerfumeStore();
+		store.setBrandName("ej store");
+		store.setStoreKey("ejejej");
+		store.setMallId(1);
+		int save = perfumeStoreRepository.save(store);
+		System.out.println("saved store: " +save);
+	}
+	
+	@Test
+	public void getStoreAndUpdate() {
+		Integer storeId = 98;
+		PerfumeStore store = perfumeStoreRepository.findById(storeId);
+		store.setPhoneNumber("010-9923-1625");
+		int update = perfumeStoreRepository.update(store);
+		System.out.println(store.getBrandName() +" updated: "+ update);
+	}
+	
+	@Test
+	public void getAllStores() {
+		List<PerfumeStore> listAll = perfumeStoreRepository.findAll();
+		for(PerfumeStore store:listAll) {
+			System.out.println(store.getStoreId() +": "+ store.getBrandName());
+		}
 	}
 	
 	
@@ -47,12 +106,25 @@ public class JdbcTest {
 	/**
 	 * perfume brand
 	 */
-	
 	@Test
 	public void updateBrand() {
 		PerfumeBrand pb = perfumeBrandRepository.findById(1);
-		System.out.println(pb.getProcessedName() +": "+ pb.getCollectedName());
-//		perfumeBrandRepository.update(brand);
+		List<Integer> ids = new ArrayList<>();
+		ids.add(1);
+		ids.add(2);
+		ids.add(3);
+		pb.setStoreId(ids);
+		System.out.println(pb.getProcessedName()+", "+pb.getCollectedName()+", "+pb.getStoreId());
+		int update = perfumeBrandRepository.update(pb);
+		System.out.println(pb.getProcessedName() +" updated ids :" + update);
 	}
-
+	
+	@Test
+	public void getAllBrands() {
+		List<PerfumeBrand> list = perfumeBrandRepository.findAll();
+		for(PerfumeBrand brand:list) {
+			System.out.println(brand.getBrandId()+": "+brand.getProcessedName());
+		}
+	}
+	
 }

@@ -6,10 +6,11 @@ import java.util.Optional;
 import com.kej.perfume_store.model.PerfumeStore;
 
 public interface PerfumeStoreRepository {
+	List<PerfumeStore> findByName(String brandName);
+	PerfumeStore findByUk(String storeKey);
 	int save(PerfumeStore store);
 	int update(PerfumeStore store);
 	List<PerfumeStore> findAll();
-	List<PerfumeStore> findByName(String brandName);
 	int countByUk(String storeKey);
-	PerfumeStore findByUk(String storeKey);
+	PerfumeStore findById(Integer storeId);
 }
