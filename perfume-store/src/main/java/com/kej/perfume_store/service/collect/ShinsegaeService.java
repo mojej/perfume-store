@@ -34,7 +34,8 @@ import com.kej.perfume_store.service.BrandService;
 public class ShinsegaeService {
 	private Logger log = LoggerFactory.getLogger(ShinsegaeService.class);
 	private ObjectMapper objectMapper = new ObjectMapper();
-
+	Map<String, Integer> brandMap = null;
+	
 	@Autowired
 	@Qualifier("jdbcMallDataRepository") // Test JdbcTemplate
 	private MallDataRepository mallRepository;
@@ -45,33 +46,33 @@ public class ShinsegaeService {
 	@Autowired BrandService brandService; 
 	
 	public void collectStore() {
-		List<MallData> mallList = mallRepository.findAll();
+		brandMap = brandService.getBrandMappingMap();
+		
+		List<MallData> mallList = mallRepository.findByType("신세계백화점");
 		for(MallData mall : mallList) {
 			log.info("start collect: {}", mall.getMallName());
 			Map<String, Object> stores = getStoresByMall(mall.getMallUrl());
 			for(Object key : stores.keySet()) {
-				// uk(store_key)로 존재 유무 확인
-				// 존재하지 않는다면, insert
-				PerfumeStore store = storeRepository.findByUk(key.toString());
-				if(store == null) {
-					store = new PerfumeStore();
-					store.setStoreKey(key.toString());
-					try {
-						String rawdata = objectMapper.writeValueAsString(stores.get(key));
-						store.setRawData(rawdata);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
-					}
-					store.setMallId(mall.getMallId());
-					storeRepository.save(store);
-					log.info("store inserted: {}", key);
-				} 
-				// 존재한다면, update
-				else {
-					store.setRawData(stores.get(key).toString());
-					storeRepository.update(store);
-					log.info("store updated: {}", key);
+				PerfumeStore ps = new PerfumeStore();
+				ps.setStoreKey(key.toString());
+				ps.setMallId(mall.getMallId());
+				try {
+					String rawdata = objectMapper.writeValueAsString(stores.get(key));
+					ps.setRawData(rawdata);
+					Map<String, Object> map = objectMapper.readValue(rawdata, new TypeReference<Map<String,Object>>() {});
+					String brandName = map.get("shop_nm").toString();
+					String tel = map.get("sh00009").toString();
+					
+					Integer brandId = brandMap.get(brandName);
+					if(brandId == null) continue;
+					
+					ps.setBrandName(brandName);
+					ps.setPhoneNumber(tel);
+				} catch (JsonProcessingException e1) {
+					e1.printStackTrace();
 				}
+				storeRepository.upsert(ps);
+				log.info("store upserted: {}", key);
 			}
 			mall.setUpdatedTime(LocalDateTime.now());
 			mallRepository.update(mall);

@@ -8,7 +8,7 @@ import com.kej.perfume_store.model.PerfumeStore;
 public interface PerfumeStoreRepository {
 	List<PerfumeStore> findByName(String brandName);
 	PerfumeStore findByUk(String storeKey);
-	int save(PerfumeStore store);
+	int upsert(PerfumeStore store);
 	int update(PerfumeStore store);
 	List<PerfumeStore> findAll();
 	int countByUk(String storeKey);

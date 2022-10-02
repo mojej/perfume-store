@@ -20,10 +20,13 @@ public class JdbcPerfumeStoreRepository implements PerfumeStoreRepository {
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public int save(PerfumeStore store) {
-		String sql = "insert into perfume.perfume_store (brand_name, phone_number, raw_data, mall_id, store_key) values (?,?,?,?,?)";
-		return jdbcTemplate.update(sql, store.getBrandName(), store.getPhoneNumber(), store.getRawData(),
-				store.getMallId(), store.getStoreKey());
+	public int upsert(PerfumeStore store) {
+		String sql = "insert into perfume.perfume_store (brand_name, phone_number, raw_data, mall_id, store_key) values (?,?,?,?,?)"
+				+ "ON CONFLICT(store_key) do update set brand_name=?, phone_number=?, raw_data=?, mall_id=?, store_key=?";
+		return jdbcTemplate.update(
+				sql, 
+				store.getBrandName(), store.getPhoneNumber(), store.getRawData(), store.getMallId(), store.getStoreKey(),
+				store.getBrandName(), store.getPhoneNumber(), store.getRawData(), store.getMallId(), store.getStoreKey());
 	}
 
 	@Override

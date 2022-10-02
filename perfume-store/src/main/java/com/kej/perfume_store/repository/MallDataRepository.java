@@ -8,4 +8,5 @@ public interface MallDataRepository {
 	MallData findById(Integer mallId);
 	int update(MallData mallData);
 	List<MallData> findAll();
+	List<MallData> findByType(String mallType);
 }

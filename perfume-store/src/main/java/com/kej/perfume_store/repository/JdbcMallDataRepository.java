@@ -39,5 +39,11 @@ public class JdbcMallDataRepository implements MallDataRepository {
 					new BeanPropertyRowMapper<MallData>(MallData.class)
 				);
 	}
+
+	@Override
+	public List<MallData> findByType(String mallType) {
+		String sql = "select * from perfume.mall_data where mall_type=?";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<MallData>(MallData.class), mallType);
+	}
 	
 }

@@ -18,10 +18,13 @@ import com.kej.perfume_store.service.collect.ShinsegaeService;
 public class BrandService {
 	private Logger log = LoggerFactory.getLogger(ShinsegaeService.class);
 //	private ObjectMapper objectMapper = new ObjectMapper();
+//	public static final Map<String,Integer> BRAND_MAPPER = new HashMap<>();
 	
 	@Autowired
 	@Qualifier("jdbcPerfumeBrandRepository") // Test JdbcTemplate
 	private PerfumeBrandRepository brandRepository;
+	
+	
 	
 	public Map<String, Integer> getBrandMappingMap() {
 		Map<String, Integer> result = new HashMap<>();

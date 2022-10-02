@@ -52,6 +52,15 @@ public class JdbcTest {
 		}
 	}
 	
+	@Test
+	public void getMallByType() {
+		String mallType = "현대백화점";
+		List<MallData> list = mallDataRepository.findByType(mallType);
+		for(MallData mall:list) {
+			System.out.println(mall.getMallId() +": "+mall.getMallName());
+		}
+	}
+	
 	
 	
 	/**
@@ -75,12 +84,13 @@ public class JdbcTest {
 	}
 	
 	@Test
-	public void saveStore() {
+	public void upsertStore() {
 		PerfumeStore store = new PerfumeStore();
-		store.setBrandName("ej store");
+		store.setBrandName("ej store2222222222");
 		store.setStoreKey("ejejej");
+		store.setPhoneNumber("010-9923-1625");
 		store.setMallId(1);
-		int save = perfumeStoreRepository.save(store);
+		int save = perfumeStoreRepository.upsert(store);
 		System.out.println("saved store: " +save);
 	}
 	
