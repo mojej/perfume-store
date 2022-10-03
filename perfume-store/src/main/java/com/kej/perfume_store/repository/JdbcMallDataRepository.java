@@ -16,6 +16,15 @@ public class JdbcMallDataRepository implements MallDataRepository {
 	@Autowired  private JdbcTemplate jdbcTemplate;
 
 	@Override
+	public int upsert(MallData mallData) {
+		String sql = "insert into perfume.mall_data (mall_name, mall_type, mall_url, mall_key, updated_time) values(?,?,?,?,?)"
+				+"ON CONFLICT(mall_key) do update set mall_name=?, mall_type=?, mall_url=?, mall_key=?, updated_time=?";
+		return jdbcTemplate.update(sql, 
+			mallData.getMallName(), mallData.getMallType(), mallData.getMallUrl(), mallData.getMallKey(), mallData.getUpdatedTime(),
+			mallData.getMallName(), mallData.getMallType(), mallData.getMallUrl(), mallData.getMallKey(), mallData.getUpdatedTime());
+	}
+	
+	@Override
 	public MallData findById(Integer mallId) {
 		String sql = "select * from perfume.mall_data where mall_id=?";
 		try {	

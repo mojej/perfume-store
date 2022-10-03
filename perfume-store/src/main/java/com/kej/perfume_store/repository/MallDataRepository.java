@@ -5,6 +5,7 @@ import java.util.List;
 import com.kej.perfume_store.model.MallData;
 
 public interface MallDataRepository {
+	int upsert(MallData mallData);
 	MallData findById(Integer mallId);
 	int update(MallData mallData);
 	List<MallData> findAll();
